@@ -35,8 +35,12 @@ public class HtmlParser {
 	}
 
 	public String getHeadersText() {
-		
-		return "";
+		ArrayList<Element> headers = doc.select("h1, h2, h3, h4, h5, h6, h7, h8, h9");
+		String headersText = "";
+		for (Element element : headers) {
+			headersText += element.text() + " ";
+		}
+		return getPermitedText(headersText);
 	}
 	
 	public ArrayList<String> getLinks() {
