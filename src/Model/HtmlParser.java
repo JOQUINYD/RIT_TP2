@@ -1,6 +1,7 @@
 package Model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,8 +26,12 @@ public class HtmlParser {
 	}
 		
 	public String getATagsText() {
-		
-		return "";
+		ArrayList<Element> aTags = doc.getElementsByTag("a");
+		String aTagsText = "";
+		for (Element element : aTags) {
+			aTagsText += element.text() + " ";
+		}
+		return aTagsText;
 	}
 
 	public String getHeadersText() {
