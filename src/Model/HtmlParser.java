@@ -20,8 +20,8 @@ public class HtmlParser {
 	}
 	
 	public String geTitleText() {
-		
-		return "";
+		Element title = doc.getElementsByTag("title").first();
+		return title.text();
 	}
 		
 	public String getATagsText() {
