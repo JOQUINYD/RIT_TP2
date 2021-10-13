@@ -1,32 +1,59 @@
 package Model;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 public class HtmlParser {
+	
+	// Attributes
+	private Document doc;
+	private Pattern pattern = Pattern.compile("[A-Za-zÁÉÍÓÚÜáéíóúüÑñ0-9_]*[A-Za-zÁÉÍÓÚÜáéíóúüÑñ][A-Za-zÁÉÍÓÚÜáéíóúüÑñ0-9_]*");
+	
+	public String getBodyText() {
+		Element body = doc.getElementsByTag("body").first();
+		return getPermitedText(body.text());
+	}
+	
+	public String geTitleText() {
+		
+		return "";
+	}
+		
+	public String getATagsText() {
+		
+		return "";
+	}
 
-	public static String getBodyText(String html) {
+	public String getHeadersText() {
 		
 		return "";
 	}
 	
-	public static String geTitleText(String html) {
-		
-		return "";
-	}
-		
-	public static String getATagsText(String html) {
-		
-		return "";
-	}
-
-	public static String getHeadersText(String html) {
-		
-		return "";
-	}
-	
-public static ArrayList<String> getLinks(String html) {
+	public ArrayList<String> getLinks() {
 		ArrayList<String> links = new ArrayList<>();
 		
 		return links;
+	}
+
+	private String getPermitedText(String originalText) {
+		String permitedText = "";
+	    Matcher matcher = pattern.matcher(originalText);
+
+	    // Find all matches
+	    while (matcher.find()) {
+	      // Get the matching string
+	      permitedText += matcher.group() + " ";
+	    }
+		
+		return permitedText;
+	}
+	
+	public void setDoc(String html) {
+		this.doc = Jsoup.parse(html);
 	}
 }
