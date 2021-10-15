@@ -62,7 +62,25 @@ public class HtmlParser {
 		return permitedText;
 	}
 	
+	public void processATags() {
+		Elements aTags = doc.select("a");
+		this.aTagsText = "";
+		String link = "";
+		this.links = new ArrayList<String>();
+		
+		for (Element element : aTags) {
+			this.aTagsText += element.text() + " ";
+			link = element.attr("href");
+			
+			if (link.matches("\\.\\./\\.\\./\\.\\./\\.\\./articles/.*")) {
+				links.add(link.replaceAll("\\.\\./\\.\\./\\.\\./\\.\\./articles/", ""));
+			}
+		}
+	}
+	
 	public void setDoc(String html) {
+		this.html = html;
 		this.doc = Jsoup.parse(html);
+		this.processATags();
 	}
 }
