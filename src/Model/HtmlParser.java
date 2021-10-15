@@ -13,7 +13,7 @@ public class HtmlParser {
 	
 	// Attributes
 	private Document doc;
-	private Pattern pattern = Pattern.compile("[A-Za-zÁÉÍÓÚÜáéíóúüÑñ0-9_]*[A-Za-zÁÉÍÓÚÜáéíóúüÑñ][A-Za-zÁÉÍÓÚÜáéíóúüÑñ0-9_]*");
+	private Pattern pattern = Pattern.compile("[A-Za-zÃÃ‰ÃÃ“ÃšÃœÃ¡Ã©Ã­Ã³ÃºÃ¼Ã‘Ã±0-9_]*[A-Za-zÃÃ‰ÃÃ“ÃšÃœÃ¡Ã©Ã­Ã³ÃºÃ¼Ã‘Ã±][A-Za-zÃÃ‰ÃÃ“ÃšÃœÃ¡Ã©Ã­Ã³ÃºÃ¼Ã‘Ã±0-9_]*");
 	
 	public String getBodyText() {
 		Element body = doc.getElementsByTag("body").first();
