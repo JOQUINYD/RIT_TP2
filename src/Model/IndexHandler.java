@@ -19,7 +19,9 @@ public class IndexHandler {
         
 		String singleHtml = "";
         RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, "r");
-        BufferedReader brRafReader = new BufferedReader(new FileReader(randomAccessFile.getFD()));
+        RandomAccessFile rafToRead = new RandomAccessFile(fileName, "r");
+        BufferedReader brRafReader = new BufferedReader(new InputStreamReader(
+        	    new FileInputStream(randomAccessFile.getFD()), "ISO-8859-1"));
         String line = null;
         
         long currentOffset = 0;
