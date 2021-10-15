@@ -1,9 +1,12 @@
 package Model;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +15,7 @@ public class IndexHandler {
 	// Attributes
 	private Indexer indexer;
 	private HtmlInfo htmlInfo = new HtmlInfo();
+	private HtmlParser htmlParser = new HtmlParser();
 	
 	// Methods
 
@@ -44,26 +48,46 @@ public class IndexHandler {
 //          System.out.println(line.matches("<!DOCTYPE.*"));
 //          System.out.println(line.matches("</html>.*"));
           
-          singleHtml += line;
-          
           // Save starting byte position
-          if(line.matches("<!DOCTYPE html PUBLIC \\\"-//W3C//DTD XHTML 1\\.0 Transitional//EN\\\" \\\"http://www\\.w3\\.org/TR/xhtml1/DTD/xhtml1-transitional\\.dtd\\\">")) {
-          	this.htmlInfo.initByte = realPosition - (realPosition - previousPosition);
+          if(line.matches("^<!DOCTYPE html PUBLIC \\\"-//W3C//DTD XHTML 1\\.0 Transitional//EN\\\" \\\"http://www\\.w3\\.org/TR/xhtml1/DTD/xhtml1-transitional\\.dtd\\\">")) {
+          	if(previousPosition != 0) {
+            	this.htmlInfo.initByte = realPosition - (realPosition - previousPosition) + 1;
+          	}
+          	else {
+          		this.htmlInfo.initByte = realPosition - (realPosition - previousPosition);
+          	}
           }                        
           
           // if end of html index it       
           if (line.matches("</html>.*")) {
           	this.htmlInfo.length = realPosition - this.htmlInfo.initByte;
-          	// parse html information into htmlInfo
           	
+          	rafToRead.seek(this.htmlInfo.initByte);
+          	byte[] arr = new byte[(int) this.htmlInfo.length];
+            rafToRead.readFully(arr);
+            String html = new String(arr);
           	
-          	// clean singleHtml
-          	singleHtml = "";
+	        // parse html information into htmlInfo
+	        this.htmlParser.setDoc(html);
+	        this.htmlInfo.body = this.htmlParser.getBodyText();
+	        this.htmlInfo.headers = this.htmlParser.getHeadersText();
+	        this.htmlInfo.title = this.htmlParser.geTitleText();
+	        this.htmlInfo.aTags = this.htmlParser.getATagsText();
+	        this.htmlInfo.links = this.htmlParser.getLinks();
+
+	        System.out.println(this.htmlInfo.initByte);
+	        System.out.println(this.htmlInfo.length);
+//	        System.out.println(this.htmlParser.getBodyText());
+//	        System.out.println(this.htmlParser.geTitleText());
+//	        System.out.println(this.htmlParser.getATagsText());
+//	        System.out.println(this.htmlParser.getLinks().toString());
+//	        System.out.println(this.htmlParser.getHeadersText());
+	        System.out.println();
           }
-          
           previousPosition = realPosition;
         }
         randomAccessFile.close();
+        rafToRead.close();
     }
 
     private int getOffset(BufferedReader bufferedReader) throws Exception {
