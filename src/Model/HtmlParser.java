@@ -8,34 +8,41 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class HtmlParser {
 	
 	// Attributes
+	private String html;
 	private Document doc;
 	private Pattern pattern = Pattern.compile("[A-Za-zÁÉÍÓÚÜáéíóúüÑñ0-9_]*[A-Za-zÁÉÍÓÚÜáéíóúüÑñ][A-Za-zÁÉÍÓÚÜáéíóúüÑñ0-9_]*");
+	private String aTagsText = "";
+	private ArrayList<String> links = new ArrayList<String>();
 	
 	public String getBodyText() {
-		Element body = doc.getElementsByTag("body").first();
-		return getPermitedText(body.text());
+		Elements body = doc.select("body");
+		if(!body.isEmpty()) {
+			return getPermitedText(body.first().text());
+		}
+		return "";
 	}
 	
 	public String geTitleText() {
-		Element title = doc.getElementsByTag("title").first();
-		return title.text();
+		Elements title = doc.select("title");
+		if(!title.isEmpty()) {
+			return title.first().text();
+		}
+		else {
+			return "";
+		}
 	}
 		
 	public String getATagsText() {
-		ArrayList<Element> aTags = doc.getElementsByTag("a");
-		String aTagsText = "";
-		for (Element element : aTags) {
-			aTagsText += element.text() + " ";
-		}
-		return aTagsText;
+		return this.aTagsText;
 	}
 
 	public String getHeadersText() {
-		ArrayList<Element> headers = doc.select("h1, h2, h3, h4, h5, h6, h7, h8, h9");
+		Elements headers = doc.select("h1, h2, h3, h4, h5, h6, h7, h8, h9");
 		String headersText = "";
 		for (Element element : headers) {
 			headersText += element.text() + " ";
@@ -44,9 +51,7 @@ public class HtmlParser {
 	}
 	
 	public ArrayList<String> getLinks() {
-		ArrayList<String> links = new ArrayList<>();
-		
-		return links;
+		return this.links;
 	}
 
 	private String getPermitedText(String originalText) {
