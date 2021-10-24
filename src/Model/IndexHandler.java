@@ -81,13 +81,13 @@ public class IndexHandler {
 //	        System.out.println(this.htmlParser.getHeadersText());
 	        System.out.println();
 	        
-	        //this.indexer.addDocument(htmlInfo);
+	        this.indexer.addDocument(htmlInfo);
           }
           previousPosition = realPosition;
         }
         randomAccessFile.close();
         rafToRead.close();
-        //this.indexer.close();
+        this.indexer.close();
     }
 	
 	public void setupIndexer(Boolean doStemming, String stopWordsPath, String indexPath) throws IOException {
