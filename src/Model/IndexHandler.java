@@ -3,6 +3,7 @@ package Model;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
@@ -13,7 +14,7 @@ import java.util.List;
 public class IndexHandler {
 	
 	// Attributes
-	private Indexer indexer;
+	private Indexer indexer = new Indexer();
 	private HtmlInfo htmlInfo = new HtmlInfo();
 	private HtmlParser htmlParser = new HtmlParser();
 	
@@ -21,9 +22,8 @@ public class IndexHandler {
 
 	public void IndexCollection(String fileName) throws Exception {
         
-		String singleHtml = "";
         RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, "r");
-        RandomAccessFile rafToRead = new RandomAccessFile(fileName, "r");
+        RandomAccessFile rafToRead = new RandomAccessFile(fileName, "rw");
         BufferedReader brRafReader = new BufferedReader(new InputStreamReader(
         	    new FileInputStream(randomAccessFile.getFD()), "ISO-8859-1"));
         String line = null;
@@ -42,12 +42,7 @@ public class IndexHandler {
             }
             int bufferOffset = getOffset(brRafReader);
             long realPosition = currentOffset + bufferOffset;
-//            System.out.println("Position : " + realPosition 
-//                    + " bufferOffset " + bufferOffset
-//                    + " and currentoffset " + currentOffset);
-//          System.out.println(line.matches("<!DOCTYPE.*"));
-//          System.out.println(line.matches("</html>.*"));
-          
+
           // Save starting byte position
           if(line.matches("^<!DOCTYPE html PUBLIC \\\"-//W3C//DTD XHTML 1\\.0 Transitional//EN\\\" \\\"http://www\\.w3\\.org/TR/xhtml1/DTD/xhtml1-transitional\\.dtd\\\">")) {
           	if(previousPosition != 0) {
@@ -74,6 +69,8 @@ public class IndexHandler {
 	        this.htmlInfo.title = this.htmlParser.geTitleText();
 	        this.htmlInfo.aTags = this.htmlParser.getATagsText();
 	        this.htmlInfo.links = this.htmlParser.getLinks();
+	        
+	        // this.indexer.addDoc(this.htmlInfo);
 
 	        System.out.println(this.htmlInfo.initByte);
 	        System.out.println(this.htmlInfo.length);
@@ -83,12 +80,19 @@ public class IndexHandler {
 //	        System.out.println(this.htmlParser.getLinks().toString());
 //	        System.out.println(this.htmlParser.getHeadersText());
 	        System.out.println();
+	        
+	        //this.indexer.addDocument(htmlInfo);
           }
           previousPosition = realPosition;
         }
         randomAccessFile.close();
         rafToRead.close();
+        //this.indexer.close();
     }
+	
+	public void setupIndexer(Boolean doStemming, String stopWordsPath, String indexPath) throws IOException {
+		this.indexer.setUpIndexer(doStemming, stopWordsPath, indexPath);
+	}
 
     private int getOffset(BufferedReader bufferedReader) throws Exception {
         Field field = BufferedReader.class.getDeclaredField("nextChar");
