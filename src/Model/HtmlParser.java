@@ -30,7 +30,7 @@ public class HtmlParser {
 	public String geTitleText() {
 		Elements title = doc.select("title");
 		if(!title.isEmpty()) {
-			return title.first().text();
+			return getPermitedText(title.first().text());
 		}
 		else {
 			return "";
@@ -38,7 +38,7 @@ public class HtmlParser {
 	}
 		
 	public String getATagsText() {
-		return this.aTagsText;
+		return getPermitedText(this.aTagsText);
 	}
 
 	public String getHeadersText() {
