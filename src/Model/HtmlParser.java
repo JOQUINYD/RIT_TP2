@@ -78,7 +78,10 @@ public class HtmlParser {
 			link = element.attr("href");
 			
 			if (link.matches("\\.\\./\\.\\./\\.\\./\\.\\./articles/.*")) {
-				links.add(link.replaceAll("\\.\\./\\.\\./\\.\\./\\.\\./articles/", ""));
+				String relativeLink = link.replaceAll("\\.\\./\\.\\./\\.\\./\\.\\./articles/", "");
+				if (!this.links.contains(relativeLink)) {
+					this.links.add(relativeLink);
+				}
 			}
 		}
 	}
