@@ -70,8 +70,6 @@ public class IndexHandler {
 	        this.htmlInfo.aTags = this.htmlParser.getATagsText();
 	        this.htmlInfo.links = this.htmlParser.getLinks();
 	        
-	        // this.indexer.addDoc(this.htmlInfo);
-
 	        System.out.println(this.htmlInfo.initByte);
 	        System.out.println(this.htmlInfo.length);
 //	        System.out.println(this.htmlParser.getBodyText());
