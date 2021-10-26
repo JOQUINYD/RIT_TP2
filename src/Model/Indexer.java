@@ -71,7 +71,7 @@ public class Indexer {
 	    doc.add(new TextField("texto", htmlInfo.body, Field.Store.NO));
 	    doc.add(new TextField("ref", htmlInfo.aTags, Field.Store.NO));
 	    doc.add(new TextField("encab", htmlInfo.headers, Field.Store.NO));
-	    doc.add(new TextField("titulo", htmlInfo.title, Field.Store.NO));
+	    doc.add(new TextField("titulo", htmlInfo.title, Field.Store.YES));
 	    
 	    for (String link : htmlInfo.links) {
 	    	doc.add(new StringField("enlace", link, Field.Store.YES));
