@@ -66,8 +66,8 @@ public class Indexer {
 		htmlInfo.title = stripPunctuation(htmlInfo.title);
 		
 		Document doc = new Document();
-	    doc.add(new LongPoint("initByte", htmlInfo.initByte));
-	    doc.add(new LongPoint("length", htmlInfo.length));
+	    doc.add(new StringField("initByte", Long.toString(htmlInfo.initByte), Field.Store.YES));
+	    doc.add(new StringField("length", Long.toString(htmlInfo.length), Field.Store.YES));
 	    doc.add(new TextField("texto", htmlInfo.body, Field.Store.NO));
 	    doc.add(new TextField("ref", htmlInfo.aTags, Field.Store.NO));
 	    doc.add(new TextField("encab", htmlInfo.headers, Field.Store.NO));
