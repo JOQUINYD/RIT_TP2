@@ -21,6 +21,8 @@ public class IndexHandler {
 	// Methods
 
 	public void IndexCollection(String fileName) throws Exception {
+        System.out.println("INDEXING...");
+        long startTime = System.nanoTime();
         
         RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, "r");
         RandomAccessFile rafToRead = new RandomAccessFile(fileName, "rw");
@@ -31,7 +33,7 @@ public class IndexHandler {
         long currentOffset = 0;
         long previousOffset = -1;
         long previousPosition = 0;
-                
+        long id = 1;        
         while ((line = brRafReader.readLine()) != null) {
             long fileOffset = randomAccessFile.getFilePointer();
             if (fileOffset != previousOffset) {
@@ -69,16 +71,8 @@ public class IndexHandler {
 	        this.htmlInfo.title = this.htmlParser.geTitleText();
 	        this.htmlInfo.aTags = this.htmlParser.getATagsText();
 	        this.htmlInfo.links = this.htmlParser.getLinks();
-	        
-	        System.out.println(this.htmlInfo.initByte);
-	        System.out.println(this.htmlInfo.length);
-//	        System.out.println(this.htmlParser.getBodyText());
-//	        System.out.println(this.htmlParser.geTitleText());
-//	        System.out.println(this.htmlParser.getATagsText());
-//	        System.out.println(this.htmlParser.getLinks().toString());
-//	        System.out.println(this.htmlParser.getHeadersText());
-	        System.out.println();
-	        
+	       
+	        id++;
 	        this.indexer.addDocument(htmlInfo);
           }
           previousPosition = realPosition;
@@ -86,6 +80,10 @@ public class IndexHandler {
         randomAccessFile.close();
         rafToRead.close();
         this.indexer.close();
+        
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime)/1000000000;
+        System.out.println("INDEXING COMPLETED - " + id + " FILES WERE PROCESSED IN " + duration + " SECONDS");
     }
 	
 	public void setupIndexer(Boolean doStemming, String stopWordsPath, String indexPath) throws IOException {
