@@ -20,12 +20,14 @@ public class IndexHandler {
 	
 	// Methods
 
-	public void IndexCollection(String fileName) throws Exception {
-        System.out.println("\nINDEXING...");
+	public void IndexCollection(String collectionPath) throws Exception {
+		this.indexer.saveIndexInfo(collectionPath);		
+        
+		System.out.println("\nINDEXING...");
         long startTime = System.nanoTime();
         
-        RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, "r");
-        RandomAccessFile rafToRead = new RandomAccessFile(fileName, "rw");
+        RandomAccessFile randomAccessFile = new RandomAccessFile(collectionPath, "r");
+        RandomAccessFile rafToRead = new RandomAccessFile(collectionPath, "rw");
         BufferedReader brRafReader = new BufferedReader(new InputStreamReader(
         	    new FileInputStream(randomAccessFile.getFD()), "ISO-8859-1"));
         String line = null;
