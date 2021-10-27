@@ -1,6 +1,8 @@
 package Model;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -82,13 +84,26 @@ public class Searcher {
 	}
 	
 	private void getLinks(Document d) {
+		System.out.println();
 		for (IndexableField field : d.getFields("enlace")) {
 			System.out.println(field.stringValue());
 		}
 	}
 	
-	private void generateHtml() {
+	private void generateHtml(Document d) throws Exception {
+		long initByte = Long.parseLong(d.get("initByte"));
+		long length = Long.parseLong(d.get("length"));
 		
+		RandomAccessFile raf = new RandomAccessFile(this.indexInfo.collectionPath, "rw");
+		raf.seek(initByte);
+		byte[] bytes = new byte[(int) length];
+		raf.readFully(bytes);
+		
+		String html = new String(bytes);
+		
+		// save html in files
+		
+		raf.close();
 	}
 	
 	private String stripPunctuation(String s) {
