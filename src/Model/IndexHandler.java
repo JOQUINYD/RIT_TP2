@@ -21,7 +21,7 @@ public class IndexHandler {
 	// Methods
 
 	public void IndexCollection(String fileName) throws Exception {
-        System.out.println("INDEXING...");
+        System.out.println("\nINDEXING...");
         long startTime = System.nanoTime();
         
         RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, "r");

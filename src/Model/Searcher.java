@@ -3,6 +3,7 @@ package Model;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -61,9 +63,27 @@ public class Searcher {
 		for (ScoreDoc sd : hits.scoreDocs) {
 			Document d = this.searcher.doc(sd.doc);
 			System.out.println("Doc starts: " + d.get("initByte") + " length: " + d.get("length"));
-			System.out.println("HEllo " + i);
+			System.out.println(d.get("titulo"));
+			for (IndexableField field : d.getFields("enlace")) {
+				System.out.println(field.stringValue());
+				
+			}
 			i++;
 		}
+	}
+	
+	private void doPaging(ScoreDoc[] scoreDocs, int pageSize) {
+		
+	}
+	
+	private void getLinks(Document d) {
+		for (IndexableField field : d.getFields("enlace")) {
+			System.out.println(field.stringValue());
+		}
+	}
+	
+	private void generateHtml() {
+		
 	}
 	
 	private String stripPunctuation(String s) {
