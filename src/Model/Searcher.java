@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.es.SpanishAnalyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -27,24 +28,28 @@ import org.apache.lucene.store.FSDirectory;
 public class Searcher {
 	IndexSearcher searcher;
 	QueryParser qp;
+	IndexInfo indexInfo;
 
-	public void setupSearcher(String indexPath, boolean stemmingActive) throws IOException {
+	public void setupSearcher(String indexPath, boolean stemmingActive) throws Exception {
 		IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(indexPath)));
 	    this.searcher = new IndexSearcher(reader);
+	    this.indexInfo = (IndexInfo) FileHandler.loadObject(indexPath+"\\indexInfo.txt");
+
+	    CharArraySet stopwords = new CharArraySet(this.indexInfo.stopwords, false);
 	    
-	    if (stemmingActive) {
+	    if (this.indexInfo.stemmingActive) {
 			Map<String,Analyzer> analyzerPerField = new HashMap<>();
-			analyzerPerField.put("texto", new SpanishAnalyzer());
-			analyzerPerField.put("ref", new StandardAnalyzer());
-			analyzerPerField.put("encab", new SpanishAnalyzer());
-			analyzerPerField.put("titulo", new StandardAnalyzer());
+			analyzerPerField.put("texto", new SpanishAnalyzer(stopwords));
+			analyzerPerField.put("ref", new StandardAnalyzer(stopwords));
+			analyzerPerField.put("encab", new SpanishAnalyzer(stopwords));
+			analyzerPerField.put("titulo", new StandardAnalyzer(stopwords));
 			
-			PerFieldAnalyzerWrapper aWrapper = new PerFieldAnalyzerWrapper(new StandardAnalyzer(), analyzerPerField);
+			PerFieldAnalyzerWrapper aWrapper = new PerFieldAnalyzerWrapper(new StandardAnalyzer(stopwords), analyzerPerField);
 			
 			this.qp = new QueryParser("texto", aWrapper);
 		} 
 		else {
-			StandardAnalyzer analyzer = new StandardAnalyzer();
+			StandardAnalyzer analyzer = new StandardAnalyzer(stopwords);
 			this.qp = new QueryParser("texto", analyzer);
 		}
 	}
