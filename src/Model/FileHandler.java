@@ -1,7 +1,9 @@
 package Model;
 
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -20,4 +22,18 @@ public class FileHandler {
 	   ois.close();
 	   return obj;
 	}
+	
+	public static void saveString(String str, String path) {
+
+		try {
+			FileWriter fWriter = new FileWriter(path);
+			BufferedWriter writer = new BufferedWriter(fWriter);
+		    writer.write(str);
+		    writer.close(); //make sure you close the writer object 
+		} catch (Exception e) {
+			System.out.println();
+		  //catch any exceptions here
+		}
+	}
+	
 }
