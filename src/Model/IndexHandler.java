@@ -35,7 +35,9 @@ public class IndexHandler {
         long currentOffset = 0;
         long previousOffset = -1;
         long previousPosition = 0;
-        long id = 1;        
+        long id = 1;       
+        Boolean newFile = false;
+        long wrongFiles = 0;
         while ((line = brRafReader.readLine()) != null) {
             long fileOffset = randomAccessFile.getFilePointer();
             if (fileOffset != previousOffset) {
@@ -55,27 +57,35 @@ public class IndexHandler {
           	else {
           		this.htmlInfo.initByte = realPosition - (realPosition - previousPosition);
           	}
+          	newFile = true;
           }                        
           
           // if end of html index it       
           if (line.matches("</html>.*")) {
-          	this.htmlInfo.length = realPosition - this.htmlInfo.initByte;
-          	
-          	rafToRead.seek(this.htmlInfo.initByte);
-          	byte[] arr = new byte[(int) this.htmlInfo.length];
-            rafToRead.readFully(arr);
-            String html = new String(arr);
-          	
-	        // parse html information into htmlInfo
-	        this.htmlParser.setDoc(html);
-	        this.htmlInfo.body = this.htmlParser.getBodyText();
-	        this.htmlInfo.headers = this.htmlParser.getHeadersText();
-	        this.htmlInfo.title = this.htmlParser.geTitleText();
-	        this.htmlInfo.aTags = this.htmlParser.getATagsText();
-	        this.htmlInfo.links = this.htmlParser.getLinks();
-	       
-	        id++;
-	        this.indexer.addDocument(htmlInfo);
+        	  if (newFile) {
+            	this.htmlInfo.length = realPosition - this.htmlInfo.initByte;
+              	
+              	rafToRead.seek(this.htmlInfo.initByte);
+              	byte[] arr = new byte[(int) this.htmlInfo.length];
+                rafToRead.readFully(arr);
+                String html = new String(arr);
+              	
+    	        // parse html information into htmlInfo
+    	        this.htmlParser.setDoc(html);
+    	        this.htmlInfo.body = this.htmlParser.getBodyText();
+    	        this.htmlInfo.headers = this.htmlParser.getHeadersText();
+    	        this.htmlInfo.title = this.htmlParser.geTitleText();
+    	        this.htmlInfo.aTags = this.htmlParser.getATagsText();
+    	        this.htmlInfo.links = this.htmlParser.getLinks();
+    	       
+    	        id++;
+    	        this.indexer.addDocument(htmlInfo);
+    	        newFile = false;
+        	  }
+        	  else {
+        		  wrongFiles++;
+			}
+
           }
           previousPosition = realPosition;
         }
@@ -85,7 +95,10 @@ public class IndexHandler {
         
         long endTime = System.nanoTime();
         long duration = (endTime - startTime)/1000000000;
-        System.out.println("INDEXING COMPLETED - " + id + " FILES WERE PROCESSED IN " + duration + " SECONDS");
+        System.out.println("INDEXING COMPLETED");
+        System.out.println("PROCESSED FILES:: " + id);
+        System.out.println("WRONG FORMAT FILES:: " + wrongFiles);
+        System.out.println("DURATION:: " + duration + " SECONDS");
     }
 	
 	public void setupIndexer(Boolean doStemming, String stopWordsPath, String indexPath) throws IOException {
