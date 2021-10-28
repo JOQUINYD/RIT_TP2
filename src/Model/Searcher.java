@@ -1,5 +1,6 @@
 package Model;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -7,7 +8,9 @@ import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
@@ -67,31 +70,76 @@ public class Searcher {
 				
 		System.out.println("Total results:: " + hits.totalHits);
 		
-		int i = 1;
-		for (ScoreDoc sd : hits.scoreDocs) {
-			Document d = this.searcher.doc(sd.doc);
-			System.out.println("Doc starts: " + d.get("initByte") + " length: " + d.get("length"));
-			System.out.println(d.get("titulo"));
-			for (IndexableField field : d.getFields("enlace")) {
-				System.out.println(field.stringValue());
-				
-			}
-			i++;
-		}
+		doPaging(hits.scoreDocs, 20);
 	}
 	
-	private void doPaging(ScoreDoc[] scoreDocs, int pageSize) {
+	private void doPaging(ScoreDoc[] scoreDocs, int pageSize) throws Exception {
+		int numOfPages = (int) Math.ceil(scoreDocs.length / Double.valueOf(pageSize));
+		int currentPage = 0;
+		Boolean inPaging = true;
 		
-	}
+		while (inPaging) {
+			System.out.println();
+			for (int i = 0; i < pageSize; i++) {
+				int docPos = (currentPage * pageSize) + i;
+				if (docPos >= scoreDocs.length) break;
+				Document d = this.searcher.doc(scoreDocs[docPos].doc);
+				System.out.println("Local ID:: " + docPos + " Title: " + d.get("titulo"));
+			}
+			System.out.println("\n(b)back (n)next (q)quit (gl)get links (gh)get html");
+			System.out.println("Please enter paging instruction:");
+			Scanner myObj1 = new Scanner(System.in);
+			String instruction = myObj1.nextLine();  // Read user input
+			int docPos;
+			switch (instruction) {
+				case "b":
+					if (currentPage > 0) {
+						currentPage--;
+					}
+					break;
+				case "n":
+					if (currentPage < numOfPages-1) {
+						currentPage++;
+					}
+					break;
+				case "q":
+					inPaging = false;
+					break;
+				case "gl":
+					System.out.println("\nEnter local ID:");
+					docPos = myObj1.nextInt();
+					if (docPos < scoreDocs.length) {
+						printLinks(this.searcher.doc(scoreDocs[docPos].doc), "files/links.txt");
+						Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + new File("files/links.txt").getAbsolutePath());
+					}
+					break;
+				case "gh":
+					System.out.println("\nEnter local ID:");
+					docPos = myObj1.nextInt();
+					if (docPos < scoreDocs.length) {
+						generateHtml(this.searcher.doc(scoreDocs[docPos].doc), "files/file.html");
+						Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + new File("files/file.html").getAbsolutePath());
+					}
+					break;
 	
-	private void getLinks(Document d) {
-		System.out.println();
-		for (IndexableField field : d.getFields("enlace")) {
-			System.out.println(field.stringValue());
+				default:
+					inPaging = false;
+					break;
+			}
+		
+
 		}
 	}
 	
-	private void generateHtml(Document d) throws Exception {
+	private void printLinks(Document d, String path) {
+		String links = "";
+		for (IndexableField field : d.getFields("enlace")) {
+			links += field.stringValue() + "\n";
+		}
+		FileHandler.saveString(links, path);
+	}
+	
+	private void generateHtml(Document d, String path) throws Exception {
 		long initByte = Long.parseLong(d.get("initByte"));
 		long length = Long.parseLong(d.get("length"));
 		
@@ -102,7 +150,7 @@ public class Searcher {
 		
 		String html = new String(bytes);
 		
-		// save html in files
+		FileHandler.saveString(html, path);
 		
 		raf.close();
 	}
