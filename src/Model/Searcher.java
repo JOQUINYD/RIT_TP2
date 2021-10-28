@@ -37,7 +37,7 @@ public class Searcher {
 	QueryParser qp;
 	IndexInfo indexInfo;
 
-	public void setupSearcher(String indexPath, boolean stemmingActive) throws Exception {
+	public void setupSearcher(String indexPath) throws Exception {
 		IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(indexPath)));
 	    this.searcher = new IndexSearcher(reader);
 	    this.indexInfo = (IndexInfo) FileHandler.loadObject(indexPath+"\\indexInfo.txt");
