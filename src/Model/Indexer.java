@@ -29,6 +29,8 @@ import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+import MyLucene.MyAnalyzer;
+
 public class Indexer {
 	
 	private IndexWriter writer;
@@ -51,13 +53,13 @@ public class Indexer {
 			analyzerPerField.put("encab", new SpanishAnalyzer(stopwords));
 		} 
 		else {
-			analyzerPerField.put("texto", new StandardAnalyzer(stopwords));
-			analyzerPerField.put("encab", new StandardAnalyzer(stopwords));
+			analyzerPerField.put("texto", new MyAnalyzer(stopwords));
+			analyzerPerField.put("encab", new MyAnalyzer(stopwords));
 		}
-		analyzerPerField.put("ref", new StandardAnalyzer(stopwords));
-		analyzerPerField.put("titulo", new StandardAnalyzer(stopwords));
+		analyzerPerField.put("ref", new MyAnalyzer(stopwords));
+		analyzerPerField.put("titulo", new MyAnalyzer(stopwords));
 
-		PerFieldAnalyzerWrapper aWrapper = new PerFieldAnalyzerWrapper(new StandardAnalyzer(), analyzerPerField);
+		PerFieldAnalyzerWrapper aWrapper = new PerFieldAnalyzerWrapper(new MyAnalyzer(stopwords), analyzerPerField);
 		
 		iwc = new IndexWriterConfig(aWrapper);
 
@@ -69,12 +71,6 @@ public class Indexer {
 	}
 	
 	public void addDocument(HtmlInfo htmlInfo) throws IOException {
-		if (!this.doStemming) {
-			htmlInfo.body = stripPunctuation(htmlInfo.body);
-			htmlInfo.headers = stripPunctuation(htmlInfo.headers);
-		}
-		htmlInfo.aTags = stripPunctuation(htmlInfo.aTags);
-		htmlInfo.title = stripPunctuation(htmlInfo.title);
 		
 		Document doc = new Document();
 	    doc.add(new StringField("initByte", Long.toString(htmlInfo.initByte), Field.Store.YES));
@@ -93,16 +89,6 @@ public class Indexer {
 	
 	public void close() throws IOException {
 		this.writer.close();
-	}
-	
-	private String stripPunctuation(String s) {
-		s = s.replace('ñ', '\001');
-	    s = s.replace('Ñ', '\002');
-	    s = Normalizer.normalize(s, Normalizer.Form.NFD);
-	    s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
-	    s = s.replace('\001', 'ñ');
-	    s = s.replace('\002', 'Ñ');
-	    return s;
 	}
 	
 	private ArrayList<String> getStopwords(String stopwordsPath) {

@@ -27,6 +27,8 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 
+import MyLucene.MyAnalyzer;
+
 public class Searcher {
 	IndexSearcher searcher;
 	QueryParser qp;
@@ -42,22 +44,21 @@ public class Searcher {
 	    if (this.indexInfo.stemmingActive) {
 			Map<String,Analyzer> analyzerPerField = new HashMap<>();
 			analyzerPerField.put("texto", new SpanishAnalyzer(stopwords));
-			analyzerPerField.put("ref", new StandardAnalyzer(stopwords));
+			analyzerPerField.put("ref", new MyAnalyzer(stopwords));
 			analyzerPerField.put("encab", new SpanishAnalyzer(stopwords));
-			analyzerPerField.put("titulo", new StandardAnalyzer(stopwords));
+			analyzerPerField.put("titulo", new MyAnalyzer(stopwords));
 			
-			PerFieldAnalyzerWrapper aWrapper = new PerFieldAnalyzerWrapper(new StandardAnalyzer(stopwords), analyzerPerField);
+			PerFieldAnalyzerWrapper aWrapper = new PerFieldAnalyzerWrapper(new MyAnalyzer(stopwords), analyzerPerField);
 			
 			this.qp = new QueryParser("texto", aWrapper);
 		} 
 		else {
-			StandardAnalyzer analyzer = new StandardAnalyzer(stopwords);
+			Analyzer analyzer = new MyAnalyzer(stopwords);
 			this.qp = new QueryParser("texto", analyzer);
 		}
 	}
 	
 	public void search(String query, int maxHits) throws Exception {
-		query = stripPunctuation(query);
 		Query parsedQuery = this.qp.parse(query);
 		
 		System.out.println("To search: " + parsedQuery);
@@ -105,14 +106,5 @@ public class Searcher {
 		
 		raf.close();
 	}
-	
-	private String stripPunctuation(String s) {
-		s = s.replace('ñ', '\001');
-	    s = s.replace('Ñ', '\002');
-	    s = Normalizer.normalize(s, Normalizer.Form.NFD);
-	    s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
-	    s = s.replace('\001', 'ñ');
-	    s = s.replace('\002', 'Ñ');
-	    return s;
-	}
+
 }
