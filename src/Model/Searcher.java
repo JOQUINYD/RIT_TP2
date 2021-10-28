@@ -68,7 +68,7 @@ public class Searcher {
 		
 		TopDocs hits = this.searcher.search(parsedQuery, maxHits);
 				
-		System.out.println("Total results:: " + hits.totalHits);
+		System.out.println("Total results:: " + hits.totalHits + " - only " + maxHits + " can be shown");
 		
 		doPaging(hits.scoreDocs, 20);
 	}
@@ -79,13 +79,14 @@ public class Searcher {
 		Boolean inPaging = true;
 		
 		while (inPaging) {
-			System.out.println();
+			System.out.println("\n------------- Page (" + (currentPage+1) + " / " + numOfPages + ") -------------\n");
 			for (int i = 0; i < pageSize; i++) {
 				int docPos = (currentPage * pageSize) + i;
 				if (docPos >= scoreDocs.length) break;
 				Document d = this.searcher.doc(scoreDocs[docPos].doc);
 				System.out.println("Local ID:: " + docPos + " Title: " + d.get("titulo"));
 			}
+			System.out.println("\n------------- Page (" + (currentPage+1) + " / " + numOfPages + ") -------------" );
 			System.out.println("\n(b)back (n)next (q)quit (gl)get links (gh)get html");
 			System.out.println("Please enter paging instruction:");
 			Scanner myObj1 = new Scanner(System.in);
