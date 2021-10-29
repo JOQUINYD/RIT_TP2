@@ -24,7 +24,7 @@ public class Main {
 			while(!instruction.equals("exit")) {
 				System.out.println("\nInstructions example:");
 				System.out.println("\tindex \"collection path\" steaming(true|false) \"folder path\" \"stopWords path\"");
-				System.out.println("\tsearch \"index path\" steaming(true|false) \"query\"");			
+				System.out.println("\tsearch \"index path\" maxHits(150) \"query\"");			
 				System.out.println("\texit");	
 				System.out.println("\nPlease enter an instruction:");			
 				instruction = myObj.nextLine();  // Read user input
@@ -34,7 +34,7 @@ public class Main {
 				}
 				
 				Pattern indexPattern = Pattern.compile("index \"(.*)\" (true|false) \"(.*)\" \"(.*)\"");
-				Pattern searchPattern = Pattern.compile("search \"(.*)\" (true|false) \"(.*)\"");
+				Pattern searchPattern = Pattern.compile("search \"(.*)\" ([0-9]+) \"(.*)\"");
 				
 				Matcher indexMatcher = indexPattern.matcher(instruction);
 				Matcher searchMatcher = searchPattern.matcher(instruction);
@@ -54,12 +54,12 @@ public class Main {
 				 } else if(searchMatcher.find()) {
 
 					String indexPath = searchMatcher.group(1);  
-					boolean steaming = Boolean.parseBoolean(searchMatcher.group(2)); 
+					int maxHits = Integer.parseInt(searchMatcher.group(2)); 
 					String query = searchMatcher.group(3); 	
 					
 					Searcher src = new Searcher();
-					src.setupSearcher(indexPath, steaming);
-					src.search(query, 20);
+					src.setupSearcher(indexPath);
+					src.search(query, maxHits);
 				 
 				 }
 				 else {
