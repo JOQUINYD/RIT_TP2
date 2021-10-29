@@ -6,5 +6,10 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="libs/jsoup-1.14.3.jar"/>
+	<classpathentry kind="lib" path="libs/lucene-analyzers-common-8.10.1.jar"/>
+	<classpathentry kind="lib" path="libs/lucene-core-8.10.1.jar"/>
+	<classpathentry kind="lib" path="libs/lucene-demo-8.10.1.jar"/>
+	<classpathentry kind="lib" path="libs/lucene-queryparser-8.10.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
